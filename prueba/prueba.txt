@@ -1,0 +1,38 @@
+/*1)	La empresa necesita saber el inventario inicial,
+por esto se solita generar una vista con la información solicitada el
+nombre de la vista será “INV_INICIAL” el nombre de los campos serán :
+“cliente”, “articulo”, “inventario_actual”, “cant_recepcion”, “cant_despacho” e “inventario_inicial” ,
+al consultar la vista debe aparecer como se ve en el ejemplo. (usar join implícito):*/
+
+create or REPLACE view INV_INICIAL AS select inv.cliente_id cliente,inv.articulo_id articulo,nvl(inv.cant_articulo,0) inventario_actual,nvl(rec.cant_recep,0) cant_recepcion,nvl(desp.cant_desp,0) cant_despacho,inv.cant_articulo-(rec.cant_recep-desp.cant_desp) invetario_inicial
+from inventario inv,DETALLE_RECEP rec,detalle_desp desp where inv.ARTICULO_ID=desp.ARTICULO_ID and rec.ARTICULO_ID=desp.ARTICULO_ID ;
+
+SELECT * FROM INV_INICIAL;
+
+/*
+2)	Generar vista con el inventario actual registrado en el sistema, 
+la vista debe llevar el nombre “Inventario_Actual”, los campos que la vista debe tener son
+“nombre_cliente”, ”código_articulo”, ”desc_articulo” (los primeros 20 caracteres, en minúscula)
+, “cantidad_inv” y  “cm_cubicos_usados” , al consultar la vista debe aparecer como se ve en el ejemplo. (usar join explicito).
+*/
+create or replace view Inventario_Actual as select clientes.desc_cliente,articulos.articulo_id,lower(substr(articulos.desc_articulo,0,19)),cant_articulo,(articulos.ALTO*articulos.ANCHO*articulos.LARGO) cm3,(inventario.CANT_ARTICULO*(articulos.ALTO*articulos.ANCHO*articulos.LARGO))cm_cubicos_usados
+from inventario join clientes on inventario.CLIENTE_ID=clientes.CLIENTE_ID join articulos on inventario.ARTICULO_ID=articulos.ARTICULO_ID order by clientes.DESC_CLIENTE,articulos.ARTICULO_ID;
+
+select * from Inventario_Actual;
+/*
+3)	Generar vista de las recepciones realizadas, el nombre de la vista será “recepciones”, los campos de la vista serán “nom_cliente”
+(primeros 5 caracteres 1° letra debe ser mayúscula las demás minúsculas, anteponer el texto “El Cliente es : ”, “desc_articulo”, “cod_recepcion”, 
+“cant_recepcion” ,
+al consultar la vista debe aparecer como se ve en el ejemplo. (usar join implícito).
+*/
+select 'El cliente es: '|| initcap(lower(clientes.DESC_CLIENTE)),articulos.DESC_ARTICULO from recepcion,clientes,articulos where recepcion.CLIENTE_ID=clientes.CLIENTE_ID and ;
+
+select * from clientes;
+select * from articulos;
+select * from inventario;
+select * from recepcion;
+select * from detalle_recep;
+select * from despachos;
+select * from detalle_desp;
+
+

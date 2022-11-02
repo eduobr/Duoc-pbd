@@ -1,0 +1,6 @@
+-4 Integrantes
+-Descripcion Empresa Articia
+-Creacion Diagrama BD (Minimo 5 Tablas)
+-Creacion insercion de datos en tablas oracle xe 11g
+-Cada alumno creara y explicara 5 Consultas utilizando
+todos los elementos de la unidad 1(en especial joins y group by)

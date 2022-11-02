@@ -1,0 +1,163 @@
+
+----- creacion usuario
+CREATE USER guiap12 IDENTIFIED BY practica12
+DEFAULT TABLESPACE "USERS"
+TEMPORARY TABLESPACE "TEMP";
+grant connect, resource, create view, create materialized view to guiap12;
+
+
+
+----- Tabla Cliente:
+
+create table cliente
+(
+rut varchar2(12) not null,
+nombre varchar2(20) not null,
+direccion varchar2(50) not null,
+fono varchar2(10) not null,
+constraint pk_cliente primary key(rut));
+
+------ Tabla Vehículo:
+
+create table vehiculo
+(
+patente varchar2(7) not null,
+marca varchar2(20) not null,
+modelo varchar2(20) not null,
+ano number(4,0) not null,
+constraint pk_vehiculo primary key(patente));
+
+
+------ Tabla Sucursal:
+
+create table sucursal
+(
+codigo number(4,0) not null,
+calle varchar2(50) not null,
+ciudad varchar2(20) not null,
+constraint pk_sucursal primary key (codigo));
+
+------ Tabla Personal:
+
+create table personal
+(
+rut varchar2(12) not null,
+nombre varchar2(120) not null,
+cargo varchar2(130) not null,
+cod_sucursal number(4,0),
+sueldo number(30,0),
+constraint pk_personal primary key(rut),
+constraint fk_sucursal foreign key(cod_sucursal) references sucursal(codigo));
+
+------ Tabla Arriendo:
+
+create table arriendo
+(
+codigo number(6,0) not null,
+rut_cliente varchar2(12),
+rut_personal varchar2(12),
+patente_vehiculo varchar2(7),
+fecha_arriendo date not null,
+fecha_devolucion date not null,
+monto number(8,0) not null,
+constraint pk_arriendo primary key(codigo),
+constraint fk_cliente foreign key(rut_cliente) references cliente(rut),
+constraint fk_personal foreign key(rut_personal) references personal(rut),
+foreign key(patente_vehiculo) references vehiculo(patente));
+
+commit;
+
+
+
+
+--------------SCRIPT
+
+insert into cliente values('10045044-5','Diana Meza','Palo Alto #258','55297598');
+Insert Into Cliente Values('14045544-8','Diego Peralta','La Dehesa #159','75297898');
+insert into cliente values('15945044-6','Mariana Acuña','Altamira #278','65277598');
+insert into cliente values('12213243-7','Juan Torres','Portales #898','56474746');
+Insert Into Cliente Values('15987908-2','Jose Garrido','Los Poetas #2159','56877898');
+insert into cliente values('17878944-2','Francisca Acuña','Violetas #22278','423227598');
+
+insert into vehiculo values('BSBJ-81','Kia','Rio',2008); 
+insert into vehiculo values('BKBM-82','Kia','Sportage Pro',2012);
+insert into vehiculo values('BFBD-83','Hyundai','Tucson',2011);
+insert into vehiculo values('BHBS-84','Porsche','GT Carrera',2011);
+Insert Into Vehiculo Values('BVBF-85','Dodge','Caravan',2005);
+insert into vehiculo values('BABU-86','Citroen','C1',2010);
+insert into vehiculo values('FGGG-67','Citroen','C3',2015);
+insert into vehiculo values('HJKL-34','Hyundai','Tucson',2016);
+insert into vehiculo values('HJKL-44','Hyundai','Santa Fe',2015);
+insert into vehiculo values('DEDE-23','Kia','Cerato',2014); 
+insert into vehiculo values('SWRE-75','Kia','Cerato',2015); 
+insert into vehiculo values('FFGG-64','Hyundai','Tucson',2015);
+insert into vehiculo values('FFTT-81','Kia','Rio',2014); 
+insert into vehiculo values('DDWW-78','Kia','Sportage',2015);
+insert into vehiculo values('QAQA-78','Kia','Sportage',2016);
+insert into vehiculo values('XXUU-12','Citroen','C4',2015);
+
+insert into sucursal values(1,'Alameda #123','Santiago');
+insert into sucursal values(2,'Providencia #223','Santiago');
+insert into sucursal values(3,'Libertad #321','Viña del Mar');
+insert into sucursal values(4,'Marina #369','La Serena');
+
+Insert Into Personal Values('13933494-9','Maximo Pacheco','Vendedor',2,667000);
+Insert Into Personal Values('21916223-5','Rafael Rios','Administrador',1,543900);
+Insert Into Personal Values('15112142-5','Marcela Araneda','Vendedor',3,602000);
+insert into personal values('12223514-8','Karina Alvarez','Vendedor',4,550000);
+Insert Into Personal Values('15444114-6','Luis Cifuentes','Vendedor',2,567000);
+
+
+Insert Into Arriendo Values(1,'10045044-5','21916223-5','BVBF-85','10-10-2015','15-10-2015',100000);
+Insert Into Arriendo Values(2,'14045544-8','12223514-8','BSBJ-81','21-09-2015','30-09-2015',135000);
+Insert Into Arriendo Values(3,'10045044-5','21916223-5','BHBS-84','11-02-2015','18-02-2015',85000);
+Insert Into Arriendo Values(4,'15945044-6','15112142-5','BVBF-85','07-03-2015','05-04-2015',767000);
+Insert Into Arriendo Values(5,'14045544-8','12223514-8','BABU-86','07-03-2015','18-05-2015',1050000);
+Insert Into Arriendo Values(6,'14045544-8','12223514-8','BABU-86','23-09-2015','28-09-2015',978000);
+Insert Into Arriendo Values(7,'15987908-2','12223514-8','QAQA-78','13-09-2015','18-09-2015',345000);
+Insert Into Arriendo Values(8,'17878944-2','15444114-6','FFTT-81','07-02-2015','25-02-2015',485000);
+Insert Into Arriendo Values(9,'14045544-8','12223514-8','DEDE-23','13-10-2015','21-10-2015',760000);
+Insert Into Arriendo Values(10,'15945044-6','15112142-5','XXUU-12','11-11-2015','22-11-2015',540000);
+
+COMMIT;
+
+
+
+CREATE TABLE Empleados_Error (
+SQ_ERROR INTEGER NOT NULL,
+RUT_PERSONAL VARCHAR2(12)NOT NULL,
+TEXTO VARCHAR2(100) NOT NULL,
+CONSTRAINT PK_error PRIMARY KEY(SQ_ERROR) );
+
+
+create sequence id_error
+minvalue 1
+maxvalue 99999999
+start with 1
+increment by 1;
+
+
+
+CREATE TABLE DATOS_SII (
+FECHA_ARRIENDO DATE NOT NULL,
+CIUDAD VARCHAR2(100) NOT NULL,
+MONTO_ARRIENDO NUMBER NOT NULL,
+IVA NUMBER NOT NULL);
+
+
+CREATE tablE arriendo_dia (
+DIA NUMBER NOT NULL,
+MES NUMBER NOT NULL,
+AÑO NUMBER NOT NULL,
+NUMERO_ARRIENDO NUMBER,
+NOMBRE_CLIENTE VARCHAR2(150) NOT NULL,
+MONTO VARCHAR2(150) NOT NULL);
+
+
+CREATE tablE ARRIENDO_MES (
+MES NUMBER NOT NULL,
+CANTIDAD_ARRIENDOS NUMBER NOT NULL,
+NUMERO_SUCURSAL NUMBER NOT NULL,
+SUMA_MENSUAL_DOLARES NUMBER NOT NULL);
+
+commit;

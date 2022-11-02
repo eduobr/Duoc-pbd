@@ -1,0 +1,59 @@
+----- creacion usuario
+CREATE USER guia16 IDENTIFIED BY practica
+DEFAULT TABLESPACE "USERS"
+TEMPORARY TABLESPACE "TEMP";
+grant connect, resource, create view, create materialized view to guia16;
+
+
+
+
+---tablas--
+
+create table profesor(cod_prof varchar2(50), 
+nombre varchar2(50), 
+telefono number(15),
+constraint pk_profesor  primary key(cod_prof));
+
+
+insert into profesor values('101','Julio Zuñiga',3456321);
+
+insert into profesor values('102','Ana Morales',7856432);
+
+
+create table historico_profesores(cod_prof varchar2(50), 
+nombre varchar2(50), 
+telefono number(15),
+fecha date,
+constraint historico  primary key(cod_prof));
+
+create table accesos(
+usuario varchar2(100),
+fecha date);
+
+
+
+
+create table articulos (tipo varchar2(50), 
+modelo varchar2(50), codigo varchar2(15), 
+precio_compra number(15),
+constraint pk_articulo  primary key(codigo));
+
+
+insert into articulos (tipo,modelo,codigo,precio_compra) 
+values('LCD','SONY 345-K','125-A',102000);
+
+
+create table control_articulos(
+tipo varchar2(50),
+modelo varchar2(50),
+codigo varchar2(15),
+precio_antiguo number,
+precio_nuevo number,
+fecha date,
+primary key(codigo));
+
+
+
+
+
+

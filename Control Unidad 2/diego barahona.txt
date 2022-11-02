@@ -1,0 +1,33 @@
+select * from TIPO_EMPLEADO;
+select * from empleado;
+select * from ventas;
+select * from comision_ventas;
+
+/*muestre el monto mínimo, monto máximo, monto total de las ventas, venta promedio,
+además indicar la cantidad de ventas, la cantidad de empleados que realizaron las ventas
+y la cantidad de empleados de la empresa*/
+
+select min(monto_total),max(monto_total),sum(monto_total),count(nro_boleta),avg(monto_total),count(DISTINCT ventas.id_empleado),count(empleado.id_empleado) from ventas join empleado on ventas.id_empleado=empleado.id_empleado ;
+ select to_char(sum(monto_total),'$999999,999') from ventas;
+declare
+v_max number(8):=0;
+v_min number(8):=0;
+v_total number(8):=0;
+v_prom number(8):=0;
+v_vend number(1):=0;
+v_tvend number(1):=0;
+v_cantv number(1):=0;
+begin
+select min(monto_total),max(monto_total),sum(monto_total),count(nro_boleta),avg(monto_total),count(DISTINCT ventas.id_empleado),count(empleado.id_empleado) 
+into v_min,v_max,v_total,v_cantv,v_prom,v_vend,v_cantv
+from ventas join empleado on ventas.id_empleado=empleado.id_empleado ;
+DBMS_OUTPUT.put_line('----------------informe de la empresa '|| sysdate || '--------------------');
+DBMS_OUTPUT.put_line('---------------------------------------------------------------------------' );
+DBMS_OUTPUT.put_line(rpad('Monto maximo',15)||rpad('monto promedio',20)||rpad('monto minimo',20)||rpad('monto total',20));
+DBMS_OUTPUT.put_line('---------------------------------------------------------------------------' );
+DBMS_OUTPUT.put_line(rpad(to_char(v_max,'$999999,999'),15)||rpad(to_char(v_prom,'$999999,999'),20)||rpad(to_char(v_min,'$999999,999'),20)||rpad(to_char(v_total,'$999999,999'),20));
+DBMS_OUTPUT.put_line('---------------------------------------------------------------------------' );
+DBMS_OUTPUT.put_line('Los valores fueron calculados sobre '|| v_cantv || ' ventas');
+DBMS_OUTPUT.put_line('Las ventas fueron realizadas por' || v_vend || 'vendedores');
+DBMS_OUTPUT.put_line('El total de vendedores del a empresa es'|| v_cantv || 'vendedores');
+end;

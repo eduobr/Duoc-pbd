@@ -1,0 +1,4 @@
+2)Modelar e insertar datos que representan una organizacion
+sin fines de lucro que permita registrar las cuotas
+de los socios empresa y persona.
+Usar packages y triggers

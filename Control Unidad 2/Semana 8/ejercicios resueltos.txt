@@ -1,0 +1,106 @@
+
+select * from ventas;
+select * from COMISION_VENTAS;
+select * from tipo_empleado;
+select * from empleado;
+
+------------------------------------------------------------------------------------------------------
+declare
+v_total ventas.monto_total%type;
+v_prom ventas.monto_total%type;
+v_min ventas.monto_total%type;
+v_max ventas.monto_total%type;
+v_vend number(1):=0;
+begin
+select max(monto_total) maximo,min(monto_total) minimo,sum(monto_total) total,avg(monto_total) promedio, count(id_empleado) empleados into
+v_max,v_min,v_total,v_prom,v_vend
+from ventas;
+DBMS_OUTPUT.PUT_LINE('Informacion de la empresa ' || sysdate);
+DBMS_OUTPUT.PUT_LINE('------------------------------------------------------------------------');
+DBMS_OUTPUT.PUT_LINE(rpad('Monto maximo',20)||rpad('Monto promedio',20)||rpad('Monto minimo',20)||rpad('Monto total',20));
+DBMS_OUTPUT.PUT_LINE('------------------------------------------------------------------------');
+DBMS_OUTPUT.PUT_LINE(rpad(v_max,20)||rpad(v_prom,20)||rpad(v_min,20)||rpad(v_total,20));
+DBMS_OUTPUT.PUT_LINE('------------------------------------------------------------------------');
+DBMS_OUTPUT.PUT_LINE('los valores calculados estan efectuados sobre ' || v_vend || ' empleados');
+end;
+------------------------------------------------------------------------------------------------------
+declare
+cursor cur is select count(id_empleado)total,tipo_empleado.desc_tipo_empleado  funcion from empleado,tipo_empleado where empleado.tipo_empleado=tipo_empleado.tipo_empleado group by tipo_empleado.tipo_empleado,tipo_empleado.desc_tipo_empleado order by total desc;
+reg_data cur%rowtype;
+begin
+DBMS_OUTPUT.PUT_LINE('Informe para distribuir empleados');
+DBMS_OUTPUT.PUT_LINE('---------------------------------------');
+DBMS_OUTPUT.PUT_LINE(rpad('Totalempleados',20)||rpad('Funcion',20));
+DBMS_OUTPUT.PUT_LINE('---------------------------------------');
+open cur;
+loop
+fetch cur into reg_data;
+exit when cur%notfound;
+DBMS_OUTPUT.PUT_LINE(rpad(reg_data.total,20) || rpad(reg_data.funcion,20));
+end loop;
+close cur;
+end;
+-----------------------------------------------------------------------------------------------------
+declare
+cursor cur(fecha  number) is select pnombre nombre,appaterno apellido,tipo_empleado.desc_tipo_empleado funcion,round((sysdate-fecha_contrato)/365,2)antiguedad
+from empleado join tipo_empleado on empleado.tipo_empleado=tipo_empleado.tipo_empleado;
+reg_empleado cur%rowtype;
+v_venta ventas.monto_total%type;
+v_max number:=0;
+begin
+select max(round((sysdate-fecha_contrato)/365,2)) into v_max from empleado;
+select sum(monto_total) into v_venta from ventas;
+DBMS_OUTPUT.PUT_LINE('Informe pago bono por antiguedad');
+DBMS_OUTPUT.PUT_LINE('----------------------------------------------------------------------');
+DBMS_OUTPUT.PUT_LINE(rpad('Empleado',20) || rpad('Años trabajados',20) || rpad('Valor bono',12) || rpad('Puesto',15));
+DBMS_OUTPUT.PUT_LINE('----------------------------------------------------------------------');
+open cur(v_max);
+loop
+fetch cur into reg_empleado;
+exit when cur%notfound;
+if reg_empleado.antiguedad=v_max then
+CASE 
+      WHEN  reg_empleado.antiguedad >4 THEN
+      DBMS_OUTPUT.PUT_LINE(rpad(reg_empleado.nombre || ' ' || reg_empleado.apellido,20) || rpad(reg_empleado.antiguedad,20) || rpad(v_venta*0.38,12) || rpad(reg_empleado.funcion,15));
+      WHEN reg_empleado.antiguedad between 3 and 4 THEN
+      DBMS_OUTPUT.PUT_LINE(rpad(reg_empleado.nombre || ' ' || reg_empleado.apellido,20) || rpad(reg_empleado.antiguedad,20) || rpad(v_venta*0.30,12) || rpad(reg_empleado.funcion,15));
+      WHEN reg_empleado.antiguedad < 3 THEN
+      DBMS_OUTPUT.PUT_LINE(rpad(reg_empleado.nombre || ' ' || reg_empleado.apellido,20) || rpad(reg_empleado.antiguedad,20) || rpad(v_venta*0.2,12) || rpad(reg_empleado.funcion,15));
+  END CASE;
+end if;
+end loop;
+close cur;
+end;
+------------------------------------------------------------------------------------------------------
+declare 
+cursor cur_comision is select id_empleado,pnombre,appaterno,desc_tipo_empleado,sum(monto_comision) comision from comision_ventas join ventas using(nro_boleta) join empleado using(id_empleado) join tipo_empleado using (tipo_empleado)group by id_empleado,pnombre,appaterno,desc_tipo_empleado;
+reg_comision cur_comision%rowtype;
+begin
+open cur_comision;
+DBMS_OUTPUT.PUT_LINE('------Monto comision empleados----------------');
+loop
+fetch cur_comision into reg_comision;
+exit when cur_comision%notfound;
+ if reg_comision.comision>19000 then
+ DBMS_OUTPUT.PUT_LINE('El monto de la comision del empleado ' || reg_comision.id_empleado || ' ' || reg_comision.pnombre || ' ' || reg_comision.appaterno || ' con cargo ' || reg_comision.desc_tipo_empleado || 'Es de ' || reg_comision.comision || '. Es una comision exelente' );
+ elsif reg_comision.comision < 19000 and reg_comision.comision>9000 then
+ DBMS_OUTPUT.PUT_LINE('El monto de la comision del empleado ' || reg_comision.id_empleado || ' ' || reg_comision.pnombre || ' ' || reg_comision.appaterno || ' con cargo ' || reg_comision.desc_tipo_empleado || 'Es de ' || reg_comision.comision || '. Es una comision normal');
+ else
+ DBMS_OUTPUT.PUT_LINE('El monto de la comision del empleado ' || reg_comision.id_empleado || ' ' || reg_comision.pnombre || ' ' || reg_comision.appaterno || ' con cargo ' || reg_comision.desc_tipo_empleado || 'Es de ' || reg_comision.comision || '. Es una comision baja' );
+end if;
+end loop;
+close cur_comision;
+end;
+-----------------------------------------------------------------------------------------------------
+declare 
+cursor cur_emp is select pnombre,appaterno,fecha_contrato from empleado;
+reg_emp cur_emp%rowtype;
+begin 
+open cur_emp;
+DBMS_OUTPUT.PUT_LINE('------cuenta correos empleados------');
+loop
+fetch cur_emp into reg_emp;
+exit when cur_emp%notfound;
+DBMS_OUTPUT.PUT_LINE(substr(reg_emp.pnombre,1,1)||reg_emp.appaterno|| to_char(reg_emp.fecha_contrato,'MM') || '@pizzaflash.cl');
+end loop;
+end;

@@ -1,0 +1,161 @@
+-- 1 --
+create or replace function F_ArriendoVendedor(nom_vend personal.nombre%type) return number is
+  cursor cur_ventas is
+    select personal.nombre nom_vendedor
+          ,sum(arriendo.monto) suma_arriendos
+    from   arriendo
+    inner join personal
+      on personal.rut = arriendo.rut_personal
+     and personal.nombre = nom_vend
+    group by personal.nombre;
+  tab_ventas    cur_ventas%rowtype;
+begin
+  open cur_ventas;
+  fetch cur_ventas into tab_ventas;
+  if cur_ventas%found then
+   return tab_ventas.suma_arriendos;
+  else
+    return 0;
+  end if;
+  close cur_ventas;
+end;
+
+declare
+ventas  number;
+nom_vend   monto_vendedor.nombre%type:='&nom_vend';
+begin
+  ventas := F_ArriendoVendedor(nom_vend);
+  insert into monto_vendedor(nombre, monto, fecha) 
+    values (nom_vend, ventas, sysdate);
+  commit;
+  dbms_output.put_line('VENTAS : ' || to_char(ventas,'99,999,999'));
+end;
+
+-- 2 --
+create or replace function f_Concurso(fecha arriendo.fecha_arriendo%type) return varchar2 is 
+  cursor cur_concurso is
+    select cliente.nombre as nom_cliente
+    from   arriendo
+    inner join cliente
+       on cliente.rut = arriendo.rut_cliente
+    where  arriendo.fecha_arriendo = fecha;
+  tab_concurso   cur_concurso%rowtype;
+begin
+  open cur_concurso;
+  fetch cur_concurso into tab_concurso;
+  if cur_concurso%found then
+    insert into concurso_cliente(numero, mes, anio, ganador) 
+                         values (seq_concurso.nextval, to_char(sysdate,'month'), to_char(sysdate,'dd'), tab_concurso.nom_cliente);
+  end if;
+  close cur_concurso;
+  commit;
+  return tab_concurso.nom_cliente;
+end;
+
+declare
+  nombre  varchar2(20);
+begin
+  nombre := f_concurso(to_date(&fecha,'dd/mm/yyyy'));
+  dbms_output.put_line('El ganador es : ' || nombre);
+end;
+
+-- 3 --
+create or replace function f_CantidadClientes(monto_arriendo arriendo.monto%type)
+return number is
+  cursor cur_arriendo is
+    select count(rut_cliente) as cant_clientes
+    from   arriendo
+    where  arriendo.monto > monto_arriendo;
+  tab_arriendo cur_arriendo%rowtype;
+begin
+  open cur_arriendo;
+  fetch cur_arriendo into tab_arriendo;
+  if cur_arriendo%found then
+    return tab_arriendo.cant_clientes;
+  else
+    return 0;
+  end if;
+  close cur_arriendo;
+end;
+
+declare
+  cant_clientes  number;
+  monto_tope   arriendo.monto%type:=&monto_tope;
+begin
+  dbms_output.put_line('------- CANTIDAD CLIENTES --------');
+  dbms_output.put_line('----------------------------------');
+  cant_clientes := f_CantidadClientes(monto_tope);
+  dbms_output.put_line(cant_clientes);
+end;
+
+-- 4 --
+create or replace function f_DiasArriendo(mod_vehiculo vehiculo.modelo%type, anno_vehiculo vehiculo.ano%type)
+return number is
+  cursor cur_diasarriendo is
+    select (arriendo.fecha_devolucion - arriendo.fecha_arriendo) as dias
+    from  arriendo
+    inner join vehiculo
+      on  vehiculo.MODELO = mod_vehiculo
+      and vehiculo.ANO = anno_vehiculo
+      and vehiculo.patente = arriendo.patente_vehiculo;
+  tab_diasarriendo  cur_diasarriendo%rowtype;
+begin
+  open cur_diasarriendo;
+  fetch cur_diasarriendo into tab_diasarriendo;
+  if cur_diasarriendo%found then
+    return tab_diasarriendo.dias;
+  else
+    return 0;
+  end if;
+  close cur_diasarriendo;
+end;
+
+declare
+  mod_vehiculo  vehiculo.modelo%type:='&mod_vehiculo';
+  anno_vehiculo vehiculo.ano%type:=&anno_vehiculo;
+  diasarriendo  number;
+begin
+  dbms_output.put_line('------- INFORME CANTIDAD DIAS / ACTUALIZACION MONTO -----');
+  diasarriendo := f_DiasArriendo(mod_vehiculo,anno_vehiculo);
+  if diasarriendo > 10 then
+    update arriendo
+    set arriendo.monto = arriendo.monto * 1.20;
+    commit;
+  end if;
+  dbms_output.put_line('Cantidad Días : ' || to_char(diasarriendo,'999'));
+END;
+
+
+
+
+create or replace procedure p_Concurso(fecha arriendo.fecha_arriendo%type, resultado out boolean) is 
+  cursor cur_concurso is
+    select cliente.nombre as nom_cliente
+    from   arriendo
+    inner join cliente
+       on cliente.rut = arriendo.rut_cliente
+    where  arriendo.fecha_arriendo = fecha;
+  tab_concurso   cur_concurso%rowtype;
+begin
+  open cur_concurso;
+  fetch cur_concurso into tab_concurso;
+  resultado := false;
+  if cur_concurso%found then
+    insert into concurso_cliente(numero, mes, anio, ganador) 
+          values (seq_concurso.nextval, to_char(sysdate,'month'), to_char(sysdate,'dd'), tab_concurso.nom_cliente);
+    resultado := true;
+  end if;
+  close cur_concurso;
+  commit;
+end;
+
+declare
+  ret  boolean;
+begin
+  p_concurso(to_date('&fecha','dd/mm/yyyy'), ret);
+  if ret then
+    dbms_output.put_line('Existe ganador');
+ else
+   dbms_output.put_line('Sin ganador');
+  end if;
+end;

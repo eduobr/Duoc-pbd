@@ -1,0 +1,149 @@
+CREATE  TABLE Recepcionista (
+  ID_Recepcionista INT NOT NULL ,
+  Rut VARCHAR(45) NOT NULL ,
+  RNombre VARCHAR(45) NOT NULL ,
+  RApellido VARCHAR(45) NOT NULL ,
+  Telefono INT NOT NULL ,
+  Fecha_Contrato DATE NOT NULL,
+  Sueldo INT NOT NULL,
+  Horario VARCHAR(45));
+  ALTER TABLE Recepcionista
+  ADD CONSTRAINT PK_Recepcionista PRIMARY KEY (ID_Recepcionista);
+---------------------------------------------------
+
+CREATE  TABLE  Cliente (
+  ID_Cliente INT NOT NULL ,
+  Rut VARCHAR(45) NOT NULL ,
+  CNombre VARCHAR(45) NOT NULL ,
+  CApellido VARCHAR(45) NOT NULL ,
+  Direccion VARCHAR(45) NOT NULL);
+  ALTER TABLE Cliente
+  ADD CONSTRAINT PK_Cliente PRIMARY KEY (ID_Cliente);
+
+CREATE  TABLE Habitacion (
+  NRO_Habitacion INT NOT NULL ,
+  Tipo_Habitacion VARCHAR(45) NOT NULL ,
+  Cant_Muebles INT NOT NULL ,
+  Velocidad_Internet_Mb INT NOT NULL ,
+  Serv_Habitacion VARCHAR(10) NOT NULL ,
+  Costo INT NOT NULL );
+  ALTER TABLE Habitacion 
+  ADD CONSTRAINT PK_Habitacion PRIMARY KEY (NRO_Habitacion);
+
+
+CREATE  TABLE Factura (
+  NRO_Factura INT NOT NULL ,
+  ID_Cliente INT NOT NULL ,
+  ID_Recepcionista INT NOT NULL ,
+  Estado VARCHAR(45) NOT NULL,
+  Cuotas INT NOT NULL);
+  ALTER TABLE Factura
+  ADD CONSTRAINT PK_Factura PRIMARY KEY (NRO_Factura);
+  
+   ALTER TABLE Factura
+   ADD CONSTRAINT FK_Factura_Cliente FOREIGN KEY (ID_Cliente)
+   REFERENCES Cliente(ID_Cliente);
+   ALTER TABLE Factura
+   ADD CONSTRAINT FK_Factura_Recepcionista FOREIGN KEY (ID_Recepcionista)
+   REFERENCES Recepcionista (ID_Recepcionista);
+
+
+CREATE  TABLE Reserva (
+  ID_Reserva INT NOT NULL ,
+  ID_Cliente INT NOT NULL ,
+  ID_Recepcionista INT NOT NULL ,
+  NRO_Habitacion INT NOT NULL ,
+  NRO_Factura INT NOT NULL ,
+  Cant_Dias INT NOT NULL ,
+  Fecha_Reserva DATE NOT NULL ,
+  Motivo VARCHAR(45) NOT NULL);
+  ALTER TABLE Reserva 
+  ADD CONSTRAINT PK_Reserva PRIMARY KEY (ID_Reserva);
+  
+  ALTER TABLE Reserva
+   ADD CONSTRAINT FK_Reserva_Cliente FOREIGN KEY (ID_Cliente)
+   REFERENCES Cliente(ID_Cliente);
+   ALTER TABLE Reserva
+   ADD CONSTRAINT FK_Reserva_Recepcionista FOREIGN KEY (ID_Recepcionista)
+   REFERENCES Recepcionista (ID_Recepcionista);
+   ALTER TABLE Reserva
+   ADD CONSTRAINT FK_Reserva_Habitacion FOREIGN KEY (NRO_Habitacion)
+    REFERENCES Habitacion (NRO_Habitacion);
+	ALTER TABLE Reserva
+   ADD CONSTRAINT FK_Reserva_Factura FOREIGN KEY (NRO_Factura)
+    REFERENCES Factura (NRO_Factura);
+
+
+   
+Insert into Recepcionista (ID_Recepcionista,Rut,RNombre,RApellido,Telefono,Fecha_Contrato,Sueldo,Horario) values ('1','11111-1','Carlos','Rodriguez','12345','16/02/2000','15000','Diurno');
+Insert into Recepcionista (ID_Recepcionista,Rut,RNombre,RApellido,Telefono,Fecha_Contrato,Sueldo,Horario) values ('2','22222-2','Felipe','Guajardo','54321','22/03/2001','32000','Vespertino');
+Insert into Recepcionista (ID_Recepcionista,Rut,RNombre,RApellido,Telefono,Fecha_Contrato,Sueldo,Horario) values ('3','33333-3','Ricardo','Melo','21678','11/12/2002','24500','Part-Time');
+Insert into Recepcionista (ID_Recepcionista,Rut,RNombre,RApellido,Telefono,Fecha_Contrato,Sueldo,Horario) values ('4','44444-4','Monica','Gonzalez','65487','17/09/2003','5439','Diurno');
+Insert into Recepcionista (ID_Recepcionista,Rut,RNombre,RApellido,Telefono,Fecha_Contrato,Sueldo,Horario) values ('5','55555-5','Cecilia','Zapata','76543','01/03/2004','44300','Vespertino');
+Insert into Recepcionista (ID_Recepcionista,Rut,RNombre,RApellido,Telefono,Fecha_Contrato,Sueldo,Horario) values ('6','66666-6','Martin','Diaz','92386','15/08/2005','21000','Vespertino');
+Insert into Recepcionista (ID_Recepcionista,Rut,RNombre,RApellido,Telefono,Fecha_Contrato,Sueldo,Horario) values ('7','77777-7','Braulio','Perez','69875','18/08/2006','34560','Part-time');
+
+Insert into Cliente (ID_Cliente,Rut,CNombre,CApellido,Direccion) values ('1','12121-1','Maria','Soto','av. Las Palmas');
+Insert into Cliente (ID_Cliente,Rut,CNombre,CApellido,Direccion) values ('2','21212-2','Alexis','Reyes','av. Los Orientales');
+Insert into Cliente (ID_Cliente,Rut,CNombre,CApellido,Direccion) values ('3','31313-3','Mauricio','Hidalgo','av. Las Palmas');
+Insert into Cliente (ID_Cliente,Rut,CNombre,CApellido,Direccion) values ('4','41414-4','Eduardo','Masca','av. Los Orientales');
+Insert into Cliente (ID_Cliente,Rut,CNombre,CApellido,Direccion) values ('5','51515-5','Catalina','Gajardo','psje. los triangulos');
+Insert into Cliente (ID_Cliente,Rut,CNombre,CApellido,Direccion) values ('6','61616-6','Sonia','Pino','psje. los triangulos');
+Insert into Cliente (ID_Cliente,Rut,CNombre,CApellido,Direccion) values ('7','71717-7','Vanesa','Palma','av. El Arbol');
+Insert into Cliente (ID_Cliente,Rut,CNombre,CApellido,Direccion) values ('8','81818-8','Claudio','Parraguez','av. El Arbol');
+Insert into Cliente (ID_Cliente,Rut,CNombre,CApellido,Direccion) values ('9','91919-9','Jose','Hevia','av. El Arbol');
+Insert into Cliente (ID_Cliente,Rut,CNombre,CApellido,Direccion) values ('10','10101-8','Enrique','Sanhueza','av. El Arbol');
+Insert into Cliente (ID_Cliente,Rut,CNombre,CApellido,Direccion) values ('11','11101-7','Luis','Uribe','av. Las Palmas');
+Insert into Cliente (ID_Cliente,Rut,CNombre,CApellido,Direccion) values ('12','12122-6','Marta','Garrido','av. Los Orientales');
+
+Insert into Habitacion (NRO_Habitacion,Tipo_Habitacion,Cant_Muebles,Velocidad_Internet_Mb,Serv_Habitacion,Costo) values ('11','Familiar','40','25','NO','75000');
+Insert into Habitacion (NRO_Habitacion,Tipo_Habitacion,Cant_Muebles,Velocidad_Internet_Mb,Serv_Habitacion,Costo) values ('21','Familiar','47','25','SI','82000');
+Insert into Habitacion (NRO_Habitacion,Tipo_Habitacion,Cant_Muebles,Velocidad_Internet_Mb,Serv_Habitacion,Costo) values ('31','Familiar','63','40','SI','105000');
+Insert into Habitacion (NRO_Habitacion,Tipo_Habitacion,Cant_Muebles,Velocidad_Internet_Mb,Serv_Habitacion,Costo) values ('41','Individual','15','10','NO','50000');
+Insert into Habitacion (NRO_Habitacion,Tipo_Habitacion,Cant_Muebles,Velocidad_Internet_Mb,Serv_Habitacion,Costo) values ('51','Individual','17','25','NO','60000');
+Insert into Habitacion (NRO_Habitacion,Tipo_Habitacion,Cant_Muebles,Velocidad_Internet_Mb,Serv_Habitacion,Costo) values ('61','Familiar','40','100','SI','120000');
+Insert into Habitacion (NRO_Habitacion,Tipo_Habitacion,Cant_Muebles,Velocidad_Internet_Mb,Serv_Habitacion,Costo) values ('71','Doble','22','45','NO','70000');
+Insert into Habitacion (NRO_Habitacion,Tipo_Habitacion,Cant_Muebles,Velocidad_Internet_Mb,Serv_Habitacion,Costo) values ('81','Triple','33','25','SI','94500');
+Insert into Habitacion (NRO_Habitacion,Tipo_Habitacion,Cant_Muebles,Velocidad_Internet_Mb,Serv_Habitacion,Costo) values ('91','Familiar','46','10','NO','150000');
+Insert into Habitacion (NRO_Habitacion,Tipo_Habitacion,Cant_Muebles,Velocidad_Internet_Mb,Serv_Habitacion,Costo) values ('101','Suite','79','125','SI','575000');
+Insert into Habitacion (NRO_Habitacion,Tipo_Habitacion,Cant_Muebles,Velocidad_Internet_Mb,Serv_Habitacion,Costo) values ('111','Suite','90','300','SI','995600');
+
+
+
+Insert into Factura (NRO_Factura,ID_Cliente,ID_Recepcionista,Estado,Cuotas) values ('1','1','3','Pagado','1');
+Insert into Factura (NRO_Factura,ID_Cliente,ID_Recepcionista,Estado,Cuotas) values ('2','1','2','Pagado','2');
+Insert into Factura (NRO_Factura,ID_Cliente,ID_Recepcionista,Estado,Cuotas) values ('3','3','1','Pendiente','12');
+Insert into Factura (NRO_Factura,ID_Cliente,ID_Recepcionista,Estado,Cuotas) values ('4','4','4','Pagado','1');
+Insert into Factura (NRO_Factura,ID_Cliente,ID_Recepcionista,Estado,Cuotas) values ('5','2','1','Pagado','1');
+Insert into Factura (NRO_Factura,ID_Cliente,ID_Recepcionista,Estado,Cuotas) values ('6','5','4','Pendiente','4');
+Insert into Factura (NRO_Factura,ID_Cliente,ID_Recepcionista,Estado,Cuotas) values ('7','5','2','Pendiente','3');
+Insert into Factura (NRO_Factura,ID_Cliente,ID_Recepcionista,Estado,Cuotas) values ('8','6','5','Pendiente','12');
+Insert into Factura (NRO_Factura,ID_Cliente,ID_Recepcionista,Estado,Cuotas) values ('9','6','5','Pagado','1');
+Insert into Factura (NRO_Factura,ID_Cliente,ID_Recepcionista,Estado,Cuotas) values ('10','7','5','Pendiente','4');
+Insert into Factura (NRO_Factura,ID_Cliente,ID_Recepcionista,Estado,Cuotas) values ('11','1','3','Pagado','1');
+Insert into Factura (NRO_Factura,ID_Cliente,ID_Recepcionista,Estado,Cuotas) values ('12','9','3','Pagado','3');
+Insert into Factura (NRO_Factura,ID_Cliente,ID_Recepcionista,Estado,Cuotas) values ('13','10','3','Pendiente','6');
+Insert into Factura (NRO_Factura,ID_Cliente,ID_Recepcionista,Estado,Cuotas) values ('14','11','3','Pagado','2');
+Insert into Factura (NRO_Factura,ID_Cliente,ID_Recepcionista,Estado,Cuotas) values ('15','12','1','Pendiente','5');
+
+
+Insert into Reserva (ID_Reserva,ID_Cliente,ID_Recepcionista,NRO_Habitacion,NRO_Factura,Cant_Dias,Fecha_Reserva,Motivo) values ('1','1','3','21','1','31','13/03/2008','Arriendo');
+Insert into Reserva (ID_Reserva,ID_Cliente,ID_Recepcionista,NRO_Habitacion,NRO_Factura,Cant_Dias,Fecha_Reserva,Motivo) values ('2','3','1','41','3','14','22/04/2009','Descanso');
+Insert into Reserva (ID_Reserva,ID_Cliente,ID_Recepcionista,NRO_Habitacion,NRO_Factura,Cant_Dias,Fecha_Reserva,Motivo) values ('3','12','1','51','15','31','01/01/2008','Arriendo');
+Insert into Reserva (ID_Reserva,ID_Cliente,ID_Recepcionista,NRO_Habitacion,NRO_Factura,Cant_Dias,Fecha_Reserva,Motivo) values ('4','8','2','71','11','93','01/06/2015','Arriendo');
+Insert into Reserva (ID_Reserva,ID_Cliente,ID_Recepcionista,NRO_Habitacion,NRO_Factura,Cant_Dias,Fecha_Reserva,Motivo) values ('5','4','4','61','4','62','01/01/2010','Trabajo');
+Insert into Reserva (ID_Reserva,ID_Cliente,ID_Recepcionista,NRO_Habitacion,NRO_Factura,Cant_Dias,Fecha_Reserva,Motivo) values ('6','1','3','31','1','31','25/05/2008','Arriendo');
+Insert into Reserva (ID_Reserva,ID_Cliente,ID_Recepcionista,NRO_Habitacion,NRO_Factura,Cant_Dias,Fecha_Reserva,Motivo) values ('7','11','3','91','14','31','13/03/2008','Arriendo');
+Insert into Reserva (ID_Reserva,ID_Cliente,ID_Recepcionista,NRO_Habitacion,NRO_Factura,Cant_Dias,Fecha_Reserva,Motivo) values ('8','10','3','81','13','1','31/07/2009','Trabajo');
+Insert into Reserva (ID_Reserva,ID_Cliente,ID_Recepcionista,NRO_Habitacion,NRO_Factura,Cant_Dias,Fecha_Reserva,Motivo) values ('9','5','2','111','7','15','01/02/2008','Vacaciones');
+Insert into Reserva (ID_Reserva,ID_Cliente,ID_Recepcionista,NRO_Habitacion,NRO_Factura,Cant_Dias,Fecha_Reserva,Motivo) values ('10','4','4','11','4','31','12/03/2011','Arriendo');
+Insert into Reserva (ID_Reserva,ID_Cliente,ID_Recepcionista,NRO_Habitacion,NRO_Factura,Cant_Dias,Fecha_Reserva,Motivo) values ('11','2','1','21','5','7','31/10/2008','Descanso');
+Insert into Reserva (ID_Reserva,ID_Cliente,ID_Recepcionista,NRO_Habitacion,NRO_Factura,Cant_Dias,Fecha_Reserva,Motivo) values ('12','2','1','91','5','7','31/10/2008','Arriendo');
+Insert into Reserva (ID_Reserva,ID_Cliente,ID_Recepcionista,NRO_Habitacion,NRO_Factura,Cant_Dias,Fecha_Reserva,Motivo) values ('13','4','4','71','4','31','12/03/2011','Arriendo');
+Insert into Reserva (ID_Reserva,ID_Cliente,ID_Recepcionista,NRO_Habitacion,NRO_Factura,Cant_Dias,Fecha_Reserva,Motivo) values ('14','5','4','21','6','7','01/05/2008','Vacaciones');
+Insert into Reserva (ID_Reserva,ID_Cliente,ID_Recepcionista,NRO_Habitacion,NRO_Factura,Cant_Dias,Fecha_Reserva,Motivo) values ('15','6','5','81','8','62','02/03/2013','Trabajo');
+Insert into Reserva (ID_Reserva,ID_Cliente,ID_Recepcionista,NRO_Habitacion,NRO_Factura,Cant_Dias,Fecha_Reserva,Motivo) values ('16','6','5','71','9','62','02/03/2014','Trabajo');
+Insert into Reserva (ID_Reserva,ID_Cliente,ID_Recepcionista,NRO_Habitacion,NRO_Factura,Cant_Dias,Fecha_Reserva,Motivo) values ('17','7','5','101','10','7','23/12/2014','Descanso');
+Insert into Reserva (ID_Reserva,ID_Cliente,ID_Recepcionista,NRO_Habitacion,NRO_Factura,Cant_Dias,Fecha_Reserva,Motivo) values ('18','7','5','111','10','7','23/12/2014','Descanso');
+Insert into Reserva (ID_Reserva,ID_Cliente,ID_Recepcionista,NRO_Habitacion,NRO_Factura,Cant_Dias,Fecha_Reserva,Motivo) values ('19','9','3','11','12','1','25/09/2015','Descanso');
+Insert into Reserva (ID_Reserva,ID_Cliente,ID_Recepcionista,NRO_Habitacion,NRO_Factura,Cant_Dias,Fecha_Reserva,Motivo) values ('20','1','2','101','2','7','24/12/2009','Vacaciones');

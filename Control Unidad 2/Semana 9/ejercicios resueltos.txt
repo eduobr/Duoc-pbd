@@ -1,0 +1,82 @@
+select * from libro;
+select * from usuario;
+select * from prestamo;
+-----------------------------------------------------------------------------------------
+DECLARE
+  REG_LIBRO	LIBRO%ROWTYPE;
+  CURSOR CUR_LIBRO IS 
+     SELECT *
+     FROM LIBRO
+     FOR UPDATE;
+BEGIN
+  OPEN CUR_LIBRO;
+  LOOP
+      FETCH CUR_LIBRO INTO REG_LIBRO;
+      EXIT WHEN CUR_LIBRO%NOTFOUND;
+          UPDATE LIBRO
+          SET CANTIDAD=REG_LIBRO.CANTIDAD + 3
+          WHERE CURRENT OF CUR_LIBRO;         
+        END LOOP;
+        close cur_libro;
+        open cur_libro;
+                DBMS_OUTPUT.PUT_LINE(rpad('Nombre',30) || ' ' || rpad('Cantidad',10));
+        DBMS_OUTPUT.PUT_LINE(rpad('--------------------',30) || ' ' || rpad('-------------------',10));
+        loop
+        fetch cur_libro into reg_libro;
+        exit when cur_libro%notfound;
+        DBMS_OUTPUT.PUT_LINE(rpad(reg_libro.nombre,30) || ' ' || rpad(reg_libro.cantidad,10));
+        end loop;
+  CLOSE CUR_LIBRO; 
+  commit;
+END ;
+-----------------------------------------------------------------------------------------
+declare
+cursor cur_libro is select codigo,nombre,cantidad from libro;
+reg_libro cur_libro%rowtype;
+begin
+open cur_libro;
+DBMS_OUTPUT.PUT_LINE('Informe de libros actualizada');
+DBMS_OUTPUT.PUT_LINE('------------------------------------------');
+DBMS_OUTPUT.PUT_LINE(rpad('Codigo',10) || rpad('Nombre',30) || rpad('Cantidad',8));
+fetch cur_libro into reg_libro;
+while cur_libro%found
+loop
+DBMS_OUTPUT.PUT_LINE(rpad(reg_libro.codigo,10) || rpad(reg_libro.nombre,30) || rpad(reg_libro.cantidad,8));
+fetch cur_libro into reg_libro;
+end loop;
+end;
+-----------------------------------------------------------------------------------------
+declare 
+cursor cur_reporte is select libro.codigo,libro.nombre,count(prestamo.id)cantidad from prestamo join libro on prestamo.codigo(+)=libro.codigo group by libro.nombre,libro.codigo;
+reg_reporte cur_reporte%rowtype;
+begin
+open cur_reporte;
+DBMS_OUTPUT.PUT_LINE('Reporte cantidad prestamo libros');
+DBMS_OUTPUT.PUT_LINE('---------------------------------------------------');
+DBMS_OUTPUT.PUT_LINE(rpad('Codigo',12) || rpad('Nombre',30) || rpad('Total prestamo',20));
+loop
+fetch cur_reporte into reg_reporte;
+exit when cur_reporte%notfound;
+DBMS_OUTPUT.PUT_LINE(rpad(reg_reporte.codigo,12) || rpad(reg_reporte.nombre,30) || rpad(reg_reporte.cantidad,20));
+end loop;
+close cur_reporte;
+end;
+-----------------------------------------------------------------------------------------
+declare
+cursor cur_prestamo is select libro.codigo,libro.editorial,libro.nombre,avg(usuario.edad) promedio,count(prestamo.id) cantidad from prestamo join usuario on prestamo.rut=usuario.rut join libro on libro.codigo=prestamo.codigo group by libro.codigo,libro.editorial,libro.nombre;
+reg_prestamo cur_prestamo%rowtype;
+begin
+open cur_prestamo;
+DBMS_OUTPUT.PUT_LINE('Reporte publicidad');
+DBMS_OUTPUT.PUT_LINE('--------------------------');
+DBMS_OUTPUT.PUT_LINE(rpad('Codigo',10) || rpad('Editorial',15) || rpad('Nombre',30) || rpad('Promedio',12) || rpad('Total de prestamos',20));
+fetch cur_prestamo into reg_prestamo;
+while cur_prestamo%found
+loop
+if reg_prestamo.promedio > 24 then
+DBMS_OUTPUT.PUT_LINE(rpad(reg_prestamo.codigo,10) || rpad(reg_prestamo.editorial,15) || rpad(reg_prestamo.nombre,30) || rpad(reg_prestamo.promedio,12) || rpad(reg_prestamo.cantidad,20));
+end if;
+fetch cur_prestamo into reg_prestamo;
+end loop;
+close cur_prestamo;
+end;

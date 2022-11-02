@@ -1,0 +1,69 @@
+ ----- creacion usuario
+CREATE USER prueba IDENTIFIED BY unidaduno
+DEFAULT TABLESPACE "USERS"
+TEMPORARY TABLESPACE "TEMP";
+grant connect, resource, create view, create materialized view to unidaduno;
+--------------- Tablas------------
+create table clientes(
+cliente_id     varchar2(4)  not null,
+desc_cliente   varchar2(30) not null,
+fecha_creacion date         not null,
+telefono       varchar2(10) not null,
+direccion      varchar2(40) not null,
+constraint pk_clientes primary key(cliente_id));
+
+
+create table articulos(
+articulo_id    varchar2(15) not null,
+desc_articulo  varchar2(50) not null,
+cliente_id     varchar2(4)  not null,
+alto           number(4)    not null,
+largo          number(4)    not null,
+ancho          number(4)    not null,
+valor_cm3      number(5)    not null,
+fecha_creacion date         not null,
+constraint pk_articulos primary key(articulo_id),
+constraint fk_aclientes foreign key (cliente_id) references clientes(cliente_id));
+
+
+create table inventario(
+articulo_id    varchar2(15) not null,
+cliente_id     varchar2(4)  not null,
+cant_articulo  number(5)    not null,
+fecha_carga    date         not null,
+constraint pk_inventario primary key(articulo_id,cliente_id),
+constraint fk_iclientes  foreign key (cliente_id) references clientes(cliente_id),
+constraint fk_iarticulos foreign key (articulo_id) references articulos(articulo_id));
+
+
+create table recepcion(
+recepcion_id   varchar2(4)  not null,
+cliente_id     varchar2(4)  not null,
+fecha_recep    date         not null,
+constraint pk_recepcion primary key(recepcion_id),
+constraint fk_rclientes  foreign key (cliente_id) references clientes(cliente_id));
+
+
+create table detalle_recep(
+recepcion_id   varchar2(4)  not null,
+articulo_id    varchar2(15)  not null,
+cant_recep     number(4)    not null,
+constraint pk_detalle_recep primary key(recepcion_id,articulo_id),
+constraint fk_drarticulos  foreign key (articulo_id) references articulos(articulo_id));
+
+
+create table despachos(
+despacho_id   varchar2(4)  not null,
+cliente_id    varchar2(4)  not null,
+fecha_desp    date         not null,
+constraint pk_despachos primary key(despacho_id),
+constraint fk_declientes  foreign key (cliente_id) references clientes(cliente_id));
+
+
+create table detalle_desp(
+despacho_id   varchar2(4)  not null,
+articulo_id   varchar2(15)  not null,
+cant_desp     number(4)    not null,
+constraint pk_detalle_desp primary key(despacho_id,articulo_id),
+constraint fk_ddarticulos  foreign key (articulo_id) references articulos(articulo_id));
+
